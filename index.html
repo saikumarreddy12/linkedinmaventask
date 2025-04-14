@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Profile Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .search-form {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            flex: 1;
+            text-align: left;
+        }
+        .form-group input, .form-group select {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #0073b1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button onclick="showSearchForm()">LinkedIn</button>
+        <div class="search-form" id="searchForm">
+            <h2>Easily use Google to search profiles on LinkedIn</h2>
+            
+            <div class="form-group">
+                <label>Country</label>
+                <select id="countrySelect">
+                    <option value="">Select a country</option>
+                </select>
+                <label>Job title</label>
+                <input type="text" id="jobTitle" placeholder="E.g. accountant OR cfo">
+            </div>
+            
+            <div class="form-group">
+                <label>Location or keywords to include</label>
+                <input type="text" id="includeKeywords" placeholder="E.g. London OR Paris AND html">
+                <label>Keywords to exclude</label>
+                <input type="text" id="excludeKeywords" placeholder="E.g. Assistant OR secretary">
+            </div>
+            
+            <div class="form-group">
+                <label>Education</label>
+                <select id="educationSelect">
+                    <option>All candidates</option>
+                    <option>High School Diploma</option>
+                    <option>Undergraduate Degree</option>
+                    <option>Master's Degree</option>
+                    <option>PhD</option>
+                </select>
+                <label>Current Employer</label>
+                <input type="text" id="employer" placeholder="E.g. Google">
+            </div>
+            
+            <button onclick="generateGoogleSearch()">Find the right people on LinkedIn</button>
+        </div>
+    </div>
+
+    <script>
+        function showSearchForm() {
+            document.getElementById("searchForm").style.display = "block";
+        }
+
+        // Populate country list
+        const countries = ["United States", "Canada", "United Kingdom", "Australia", "Germany", "France", "India", "China", "Japan", "Brazil", "Russia", "South Africa", "Mexico", "Italy", "Spain", "Netherlands", "Sweden", "Switzerland", "South Korea", "Singapore", "New Zealand"];
+
+        const countrySelect = document.getElementById("countrySelect");
+        countries.forEach(country => {
+            let option = document.createElement("option");
+            option.textContent = country;
+            option.value = country;
+            countrySelect.appendChild(option);
+        });
+
+        function generateGoogleSearch() {
+            let jobTitle = document.getElementById("jobTitle").value.trim();
+            let location = document.getElementById("includeKeywords").value.trim();
+            let excludeKeywords = document.getElementById("excludeKeywords").value.trim();
+            let employer = document.getElementById("employer").value.trim();
+            let country = document.getElementById("countrySelect").value;
+
+            let queryParts = [];
+            if (jobTitle) queryParts.push(`"${jobTitle}"`);
+            if (location) queryParts.push(`"${location}"`);
+            if (country) queryParts.push(`"${country}"`);
+            if (excludeKeywords) queryParts.push(`-"${excludeKeywords}"`);
+            if (employer) queryParts.push(`"Current * ${employer} *"`);
+            
+            // Add fixed LinkedIn filtering
+            queryParts.push('-intitle:"profiles"');
+            queryParts.push('-inurl:"dir/"');
+            queryParts.push('site:linkedin.com/in/ OR site:linkedin.com/pub/');
+
+            // Construct final query
+            let finalQuery = queryParts.join(" ");
+
+            // Encode and open in new tab
+            let googleSearchURL = `https://www.google.com/search?q=${encodeURIComponent(finalQuery)}`;
+            window.open(googleSearchURL, "_blank");
+        }
+    </script>
+</body>
+</html>
